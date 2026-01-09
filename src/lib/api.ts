@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const API_BASE_URL = import.meta.env.API_BASE_URL || 'http://localhost:8000';
 
 // Types matching FastAPI models
 export type InsulationLevel = 'poor' | 'average' | 'good' | 'excellent';

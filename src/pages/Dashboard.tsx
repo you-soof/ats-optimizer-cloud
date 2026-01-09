@@ -77,9 +77,9 @@ const mockForecast: PriceCarbonForecast[] = Array.from({ length: 24 }, (_, i) =>
 }));
 
 export default function Dashboard() {
-  const [devices, setDevices] = useState<Device[]>(mockDevices);
-  const [actions, setActions] = useState<Record<string, CurrentAction>>(mockActions);
-  const [forecast, setForecast] = useState<PriceCarbonForecast[]>(mockForecast);
+  const [devices, setDevices] = useState<Device[]>([]);
+  const [actions, setActions] = useState<Record<string, CurrentAction>>({});
+  const [forecast, setForecast] = useState<PriceCarbonForecast[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -88,8 +88,8 @@ export default function Dashboard() {
       setLoading(true);
       try {
         const [devicesData, forecastData] = await Promise.all([
-          api.listDevices().catch(() => mockDevices),
-          api.getPriceCarbonForecast().catch(() => mockForecast),
+          api.listDevices().catch(() => []),
+          api.getPriceCarbonForecast().catch(() => []),
         ]);
         setDevices(devicesData);
         setForecast(forecastData);
