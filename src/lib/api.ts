@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.API_BASE_URL || 'http://localhost:8000';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 // Types matching FastAPI models
 export type InsulationLevel = 'poor' | 'average' | 'good' | 'excellent';
@@ -101,7 +101,9 @@ async function fetchAPI<T>(endpoint: string, options?: RequestInit): Promise<T> 
     throw new Error(error.detail || `HTTP ${response.status}`);
   }
 
-  return response.json();
+  const data = response.json();
+  console.log({endpoint,data})
+  return data;
 }
 
 export const api = {
