@@ -2,26 +2,50 @@ import { Layout } from '@/components/layout/Layout';
 import { DemandResponsePanel } from '@/components/grid/DemandResponsePanel';
 import { Zap, Users, Activity, Clock } from 'lucide-react';
 import { StatsCard } from '@/components/dashboard/StatsCard';
+import { useEffect, useState } from 'react';
+import { api, Device } from '@/lib/api';
 
 export default function GridControl() {
+  const [vppDevices, setVppDevices] = useState<Device[]>([]);
+    // const [actions, setActions] = useState<Record<string, CurrentAction>>();
+    const [loading, setLoading] = useState(false);
+    
+    const fetchDevices = async () => {
+      setLoading(true);
+      try {
+        const devicesData = await api.listDevices();
+       const vppDevices = devicesData.filter((device) => device.vpp_enabled);
+        console.log(devicesData, ":device data");
+        setVppDevices(vppDevices);
+
+      } finally {
+        setLoading(false);
+      }
+    };
+    useEffect(() => {
+      fetchDevices();
+    }, []);
   return (
-    <Layout title="Grid Control" subtitle="Manage demand response and virtual power plant">
+    <Layout
+      title="Grid Control"
+      subtitle="Manage demand response and virtual power plant"
+    >
       {/* Stats */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-6">
         <StatsCard
           title="VPP Devices"
-          value={12}
+          value={vppDevices.length}
           subtitle="Participating in grid"
           icon={Zap}
           variant="primary"
         />
-        <StatsCard
+        {/* <StatsCard
           title="Total Capacity"
           value="84 kW"
           subtitle="Available for DR"
           icon={Activity}
           variant="success"
-        />
+        /> */}
         <StatsCard
           title="Active Events"
           value={0}
@@ -30,18 +54,18 @@ export default function GridControl() {
         />
         <StatsCard
           title="Participants"
-          value={8}
+          value={0}
           subtitle="Last event"
           icon={Users}
         />
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-6 lg:grid-cols-1">
         {/* Demand Response Panel */}
         <DemandResponsePanel />
 
         {/* Recent Events */}
-        <div className="glass-card p-6">
+        {/* <div className="glass-card p-6">
           <h3 className="font-semibold text-foreground mb-4">Recent Events</h3>
           <div className="space-y-3">
             {[
@@ -67,17 +91,21 @@ export default function GridControl() {
               </div>
             ))}
           </div>
-        </div>
+        </div> */}
       </div>
 
       {/* Info */}
       <div className="mt-6 glass-card p-6">
-        <h3 className="text-lg font-semibold text-foreground mb-4">About Virtual Power Plant</h3>
+        <h3 className="text-lg font-semibold text-foreground mb-4">
+          About Virtual Power Plant
+        </h3>
         <div className="prose prose-sm prose-invert max-w-none">
           <p className="text-muted-foreground">
-            The Virtual Power Plant (VPP) aggregates your heat pumps to provide grid balancing services. 
-            When enabled, devices can participate in demand response events, temporarily adjusting their 
-            operation to help stabilize the electrical grid during peak demand or supply fluctuations.
+            The Virtual Power Plant (VPP) aggregates your heat pumps to provide
+            grid balancing services. When enabled, devices can participate in
+            demand response events, temporarily adjusting their operation to
+            help stabilize the electrical grid during peak demand or supply
+            fluctuations.
           </p>
           <div className="mt-4 grid gap-4 md:grid-cols-3">
             <div className="rounded-lg bg-secondary/50 p-4">

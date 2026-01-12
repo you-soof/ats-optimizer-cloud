@@ -33,7 +33,8 @@ export function DeviceCard({ device, currentAction }: DeviceCardProps) {
       default: return 'status-idle';
     }
   };
-
+  
+  
   return (
     <div 
       className="glass-card group cursor-pointer p-5 transition-all duration-300 hover:border-primary/30 hover:shadow-lg animate-slide-up"

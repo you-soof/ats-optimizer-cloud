@@ -1,8 +1,8 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
 // Types matching FastAPI models
-export type InsulationLevel = 'poor' | 'average' | 'good' | 'excellent';
-export type HeatPumpType = 'air_source' | 'ground_source' | 'water_source' | 'hybrid';
+export type InsulationLevel = "low" | "medium" | "high";
+export type HeatPumpType = "GSHP" | "ASHP";
 
 export interface DeviceRegistration {
   device_id: string;
@@ -61,20 +61,27 @@ export interface ComfortRiskResponse {
 
 export interface DemandResponseRequest {
   duration_minutes: number;
-  severity: 'normal' | 'high' | 'critical';
+  severity: "normal" | "high" | "critical";
   affected_areas: string[];
 }
 
 export interface DemandResponseResponse {
   event_id: string;
   participants: number;
-  estimated_reduction_kw: number;
+  estimated_load_reduction_mw: number;
 }
 
+export interface ForecastResponse {
+  current_wind_percentage: number;
+  forecast: Array<PriceCarbonForecast>;
+  grid_stress_level: string;
+}
 export interface PriceCarbonForecast {
+  is_cheap: boolean;
+  is_green: boolean;
   timestamp: string;
-  price: number;
-  carbon_intensity: number;
+  price_eur_mwh: number;
+  wind_percentage: number;
 }
 
 export interface CurrentAction {
@@ -87,43 +94,46 @@ export interface CurrentAction {
 }
 
 // API functions
-async function fetchAPI<T>(endpoint: string, options?: RequestInit): Promise<T> {
+async function fetchAPI<T>(
+  endpoint: string,
+  options?: RequestInit
+): Promise<T> {
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {
     ...options,
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       ...options?.headers,
     },
   });
 
   if (!response.ok) {
-    const error = await response.json().catch(() => ({ detail: 'Request failed' }));
+    const error = await response
+      .json()
+      .catch(() => ({ detail: "Request failed" }));
     throw new Error(error.detail || `HTTP ${response.status}`);
   }
 
   const data = response.json();
-  console.log({endpoint,data})
+  console.log({ endpoint, data });
   return data;
 }
 
 export const api = {
   // Devices
   registerDevice: (data: DeviceRegistration) =>
-    fetchAPI<Device>('/devices/register', {
-      method: 'POST',
+    fetchAPI<Device>("/devices/register", {
+      method: "POST",
       body: JSON.stringify(data),
     }),
 
-  getDevice: (deviceId: string) =>
-    fetchAPI<Device>(`/devices/${deviceId}`),
+  getDevice: (deviceId: string) => fetchAPI<Device>(`/devices/${deviceId}`),
 
-  listDevices: () =>
-    fetchAPI<Device[]>('/devices'),
+  listDevices: () => fetchAPI<Device[]>("/devices"),
 
   // Strategy
   getDailyPlan: (data: DailyPlanRequest) =>
-    fetchAPI<DailyPlanResponse>('/strategy/daily-plan', {
-      method: 'POST',
+    fetchAPI<DailyPlanResponse>("/strategy/daily-plan", {
+      method: "POST",
       body: JSON.stringify(data),
     }),
 
@@ -132,19 +142,19 @@ export const api = {
 
   // Analytics
   analyzeComfortRisk: (data: ComfortRiskRequest) =>
-    fetchAPI<ComfortRiskResponse>('/analytics/comfort-risk', {
-      method: 'POST',
+    fetchAPI<ComfortRiskResponse>("/analytics/comfort-risk", {
+      method: "POST",
       body: JSON.stringify(data),
     }),
 
   // Grid
   triggerDemandResponse: (data: DemandResponseRequest) =>
-    fetchAPI<DemandResponseResponse>('/grid/demand-response', {
-      method: 'POST',
+    fetchAPI<DemandResponseResponse>("/grid/demand-response", {
+      method: "POST",
       body: JSON.stringify(data),
     }),
 
   // Forecasts
   getPriceCarbonForecast: () =>
-    fetchAPI<PriceCarbonForecast[]>('/forecasts/price-carbon'),
+    fetchAPI<ForecastResponse>("/forecasts/price-carbon"),
 };

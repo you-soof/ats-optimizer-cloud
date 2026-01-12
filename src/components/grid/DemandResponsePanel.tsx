@@ -28,6 +28,7 @@ export function DemandResponsePanel() {
         severity,
         affected_areas: ['FI'],
       });
+      console.log({response})
       setResult(response);
       toast.success('Demand response event triggered!');
     } catch (error) {
@@ -52,8 +53,12 @@ export function DemandResponsePanel() {
           <Zap className="h-5 w-5 text-primary" />
         </div>
         <div>
-          <h3 className="font-semibold text-foreground">Demand Response Control</h3>
-          <p className="text-sm text-muted-foreground">Trigger grid balancing events</p>
+          <h3 className="font-semibold text-foreground">
+            Demand Response Control
+          </h3>
+          <p className="text-sm text-muted-foreground">
+            Trigger grid balancing events
+          </p>
         </div>
       </div>
 
@@ -64,7 +69,9 @@ export function DemandResponsePanel() {
               <Clock className="h-4 w-4 text-muted-foreground" />
               Duration
             </Label>
-            <span className="text-sm font-mono text-foreground">{duration} min</span>
+            <span className="text-sm font-mono text-foreground">
+              {duration} min
+            </span>
           </div>
           <Slider
             value={[duration]}
@@ -81,7 +88,10 @@ export function DemandResponsePanel() {
             <AlertTriangle className="h-4 w-4 text-muted-foreground" />
             Severity Level
           </Label>
-          <Select value={severity} onValueChange={(v) => setSeverity(v as typeof severity)}>
+          <Select
+            value={severity}
+            onValueChange={(v) => setSeverity(v as typeof severity)}
+          >
             <SelectTrigger className="bg-secondary border-border">
               <SelectValue />
             </SelectTrigger>
@@ -146,7 +156,7 @@ export function DemandResponsePanel() {
             <div className="col-span-2">
               <p className="text-muted-foreground">Estimated Reduction</p>
               <p className={cn("text-lg font-semibold", getSeverityColor())}>
-                {result.estimated_reduction_kw.toFixed(1)} kW
+                {result.estimated_load_reduction_mw} kW
               </p>
             </div>
           </div>

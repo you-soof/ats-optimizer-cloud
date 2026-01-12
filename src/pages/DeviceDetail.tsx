@@ -17,33 +17,6 @@ import { api, Device, CurrentAction, HourlyAction } from '@/lib/api';
 import { cn } from '@/lib/utils';
 
 // Mock data
-const mockDevice: Device = {
-  id: 1,
-  device_id: 'HP-001',
-  name: 'Living Room',
-  latitude: 60.1699,
-  longitude: 24.9384,
-  insulation_level: 'good',
-  floor_area: 45,
-  volume: 120,
-  heat_pump_type: 'air_source',
-  rated_power: 8,
-  cop_rating: 3.5,
-  comfort_min_temp: 18,
-  comfort_max_temp: 24,
-  vpp_enabled: true,
-  created_at: '2024-01-15T10:00:00Z',
-  updated_at: '2024-01-15T10:00:00Z',
-};
-
-const mockAction: CurrentAction = {
-  device_id: 'HP-001',
-  mode: 'heating',
-  target_temp: 21,
-  current_temp: 19.5,
-  reason: 'Low electricity price window - optimal for preheating',
-  next_change: '14:00',
-};
 
 const mockPlan: HourlyAction[] = Array.from({ length: 24 }, (_, hour) => {
   const modes = ['eco', 'heating', 'idle', 'heating'];
@@ -71,17 +44,22 @@ export default function DeviceDetail() {
       setLoading(true);
       try {
         const [deviceData, actionData, planData] = await Promise.all([
-          api.getDevice(deviceId).catch(() => ({ ...mockDevice, device_id: deviceId })),
-          api.getCurrentAction(deviceId).catch(() => mockAction),
-          api.getDailyPlan({ device_id: deviceId }).catch(() => ({ hourly_actions: mockPlan })),
+          api.getDevice(deviceId),
+          api.getCurrentAction(deviceId),
+          api.getDailyPlan({ device_id: deviceId })
         ]);
+        console.log({
+          deviceData,
+          actionData,
+          planData
+        })
         setDevice(deviceData);
         setAction(actionData);
         setPlan(planData.hourly_actions || mockPlan);
       } catch {
-        setDevice({ ...mockDevice, device_id: deviceId || 'HP-001' });
-        setAction(mockAction);
-        setPlan(mockPlan);
+        // setDevice({ ...mockDevice, device_id: deviceId || 'HP-001' });
+        // setAction(mockAction);
+        // setPlan(mockPlan);
       } finally {
         setLoading(false);
       }
