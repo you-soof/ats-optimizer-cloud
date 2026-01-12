@@ -32,11 +32,11 @@ export default function Dashboard() {
 
     fetchData();
   }, []);
-
+  console.log(forecast, ":devices in dashboard page");
   const activeDevices = devices.filter((d) => d.vpp_enabled).length;
-  const avgTemp =
-    Object.values(actions).reduce((acc, a) => acc + (a?.current_temp || 0), 0) /
-    Object.keys(actions).length;
+  // const avgTemp =
+  //   Object.values(devices).reduce((acc, a) => acc + (a?.current_temp || 0), 0) /
+  //   Object.keys(devices).length;
   const currentPrice = forecast[0]?.price_eur_mwh || 0;
   const currentCarbon = forecast[0]?.wind_percentage || 0;
 
@@ -62,12 +62,12 @@ export default function Dashboard() {
           trend={{ value: 12, positive: true }}
           variant="success"
         />
-        <StatsCard
+        {/* <StatsCard
           title="Avg Temperature"
           value={`${avgTemp.toFixed(1)}°C`}
           subtitle="Across all devices"
           icon={Thermometer}
-        />
+        /> */}
         <StatsCard
           title="Current Carbon"
           value={`${currentCarbon.toFixed(0)}`}
